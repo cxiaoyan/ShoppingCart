@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html ng-app="car">
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script type="text/javascript" src="js/angular.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+	</head>
+	<style type="text/css">
+		.active{
+			display: block;
+		}
+	</style>
+	<body ng-controller="mainCtrl">
+		
+		
+	<nav class="navbar navbar-inverse" role="navigation">
+	  <div class="container-fluid">
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	     <ul class="nav navbar-nav navbar-right">
+	        <li class="dropdown">
+	          <!--<ahref="#" class="dropdown-toggle" data-toggle="dropdown">购物车 <span class="caret"></span></a>-->
+	          
+	          <div car></div>
+	          
+	          
+	          <ul class="dropdown-menu" role="menu">
+	            <li ng-repeat="v in cars">
+	            	<a href="#">
+	            	<span>{{v.name}}</span>
+	            	<span>{{v.num}}</span>
+	            	<span>{{v.price*v.num}}</span>
+	            	<!--<span ng-click="addnum($index)" class="glyphicon glyphicon-arrow-up"></span>
+	            	<span ng-click="jiannum($index)" class="glyphicon glyphicon-arrow-down"></span>-->
+	            	
+	            	<span ng-click="v.num=v.num+1" class="glyphicon glyphicon-arrow-up"></span>
+	            	<span ng-click="v.num=(v.num<=1)?1:(v.num-1)" class="glyphicon glyphicon-arrow-down"></span>
+	            	<span ng-click="remove($index)">删除</span>
+	            	</a>
+	            </li>
+	            <li class="divider">
+	            	
+	            </li>
+	            
+	            <li>
+	            	<a ng-if="total()!==0" href="#">
+	            		<san>总计：</san>
+	            		<span>{{total()}}</span>
+	            	</a>
+	            	<a ng-if="total()===0" href="">亲，购物车还没东西！</a>
+	            </li>
+	            
+	          </ul>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+	
+	
+	<div class="row" >
+	  <div class="col-sm-3" ng-repeat="v in goods">
+	    <div class="thumbnail">
+	      <div class="caption">
+	        <h4>{{v.name}}</h4>
+	        <p>{{v.price}}</p>
+	        <p><a ng-click="add2car($index)" href="#" class="btn btn-primary" role="button">加入购物车</a></p>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+		
+	</body>
+	<script type="text/javascript">
+		var app=angular.module("car",[]);
+//		angular的自定义属性
+		app.directive("car",[function(){
+			return{
+//				Attribute
+				restrict:"A",
+				template:'<a class="dropdown-toggle" data-toggle="dropdown">购物车 <span class="caret"></span></a>',
+				replace:true,
+				link:function($scope,el){
+//					console.log(el)
+					var drop=$(".dropdown-menu");
+					$(el).on("click",function(){
+						drop.toggleClass("active");
+						$(this).css("cursor","pointer");
+						return false;
+					})
+					
+					drop.on("click",false)
+					
+					$("body").on("click",function(){
+						drop.removeClass("active");
+					})
+				}
+			}
+		}])
+		app.controller("mainCtrl",['$scope',function($scope){
+			$scope.goods=[
+				{id:1001,name:"洗衣机",price:320},
+				{id:1002,name:"电冰箱",price:370},
+				{id:1003,name:"电视机",price:3890},
+				{id:1004,name:"电烤箱",price:38},
+			];
+			
+			$scope.cars=[
+				{id:1001,num:2,name:"洗衣机",price:320},
+				{id:1002,num:3,name:"电冰箱",price:370},
+			];
+			
+			function hasId(id){
+				for(var i=0;i<$scope.cars.length;i++){
+					var v=$scope.cars[i];
+					if(v.id===id){
+						return i; 
+					}
+				}
+				return -1;
+			}
+			
+			$scope.stop=function(e){
+				e.stopPropagation();
+			}
+			
+			$scope.total=function(){
+				var r=0;
+				for(var i=0;i<$scope.cars.length;i++){
+					var v=$scope.cars[i];
+					r+=v.num*v.price;
+				}
+				return r;
+			}
+			
+			
+			$scope.add2car=function(index){
+				
+				var v=$scope.goods[index];
+				var m=hasId(v.id);
+				if(m!==-1){
+					$scope.cars[m].num+=1;
+				}else{
+					v.num=1;
+					$scope.cars.push(v);
+				}
+				
+			}
+			
+			$scope.remove=function(index){
+				$scope.cars.splice(index,1)
+			}
+			
+			
+			
+//			angular 与jQuery结合使用
+
+//			页面逻辑
+//			数据逻辑
+//			angular来完成
+//			
+//			页面效果
+//			jQuery
+			
+			
+			
+			
+		}])
+	</script>
+</html>
